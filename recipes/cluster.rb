@@ -6,5 +6,5 @@
 
 # Install and Configure SQL Cluster
 
-include_recipe 'windows-cluster'
+include_recipe 'ls_windows_cluster'
 

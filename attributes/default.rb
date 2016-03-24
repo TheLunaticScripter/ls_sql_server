@@ -5,6 +5,3 @@ default['ls_sql_server']['sysadmins'] = 'thewall.LOCAL\\SQL Administrators'
 default['ls_sql_server']['agent_account_pwd'] = 'p@ssw0rd!'
 default['ls_sql_server']['sql_account_pwd'] = 'p@ssw0rd!'
 default['ls_sql_server']['cluster'] = 'standalone'
-default['ls_sql_server']['cluster_name'] = 'testCluster'
-default['ls_sql_server']['cluster_ip_address'] = '10.0.3.231'
-

@@ -7,3 +7,4 @@ long_description 'Installs/Configures SQL 2012 Enterprise'
 version '0.2.4'
 
 depends 'windows'
+depends 'ls_windows_cluster'
