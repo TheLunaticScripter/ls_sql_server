@@ -10,17 +10,17 @@
 windows_feature 'NetFx3' do
   action :install
   all true
-  source node['sql-server']['netfx3_source']
+  source node['ls_sql_server']['netfx3_source']
 end
 
 # Install SQL 2012 Enterprise
 
 config_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'ConfigurationFile.ini'))
 
-sql_sys_admin_list = if node['sql-server']['sysadmins'].is_a? Array
-                       node['sql-server']['sysadmins'].map { |account| %("#{account}") }.join(' ') # surround each in quotes, space delimit list
+sql_sys_admin_list = if node['ls_sql_server']['sysadmins'].is_a? Array
+                       node['ls_sql_server']['sysadmins'].map { |account| %("#{account}") }.join(' ') # surround each in quotes, space delimit list
                      else
-                       %("#{node['sql-server']['sysadmins']}") # surround in quotes
+                       %("#{node['ls_sql_server']['sysadmins']}") # surround in quotes
                      end
 
 template config_file_path do
@@ -33,8 +33,8 @@ end
 # Build safe password command line options for the installer
 # see http://technet.microsoft.com/library/ms144259
 passwords_options = {
-  AGTSVCPASSWORD: node['sql-server']['agent_account_pwd'],
-  SQLSVCPASSWORD: node['sql-server']['sql_account_pwd']
+  AGTSVCPASSWORD: node['ls_sql_server']['agent_account_pwd'],
+  SQLSVCPASSWORD: node['ls_sql_server']['sql_account_pwd']
 }.map do |option, attribute|
   next unless attribute
   # Escape password double quotes and backslashes
@@ -43,7 +43,7 @@ passwords_options = {
 end.compact.join ' '
 
 windows_package 'Microsoft SQL Server 2012 (64-bit)' do
-  source "#{node['sql-server']['sql_source']}\\setup.exe"
+  source "#{node['ls_sql_server']['sql_source']}\\setup.exe"
   installer_type :custom
   timeout 1500
   options "#{passwords_options} /ConfigurationFile=#{config_file_path} "

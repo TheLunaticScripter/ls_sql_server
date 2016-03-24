@@ -1,4 +1,4 @@
-name 'sql-server'
+name 'ls_sql_server'
 maintainer 'John Snow'
 maintainer_email 'john.snow@test.local'
 license 'all_rights'

@@ -7,9 +7,9 @@
 
 # Install SQL 2012 Enterprise
 
-include_recipe 'sql-server::install'
+include_recipe 'ls_sql_server::install'
 
 # install cluster
-if node['sql-server']['cluster'] == 'cluster'
-  include_recipe 'sql-server::cluster'
+if node['ls_sql_server']['cluster'] == 'cluster'
+  include_recipe 'ls_sql_server::cluster'
 end
