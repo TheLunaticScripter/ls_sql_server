@@ -1,0 +1,10 @@
+default['sql-server']['netfx3_source'] = '\\\\SCCM\software$\Sources\sxs'
+default['sql-server']['sql_account'] = 'thewall.LOCAL\\SQLSVC'
+default['sql-server']['sql_source'] = '\\\\SCCM\\software$\\Sources\\SQL2012SP3'
+default['sql-server']['sysadmins'] = 'thewall.LOCAL\\SQL Administrators'
+default['sql-server']['agent_account_pwd'] = 'p@ssw0rd!'
+default['sql-server']['sql_account_pwd'] = 'p@ssw0rd!'
+default['sql-server']['cluster'] = 'standalone'
+default['sql-server']['cluster_name'] = 'testCluster'
+default['sql-server']['cluster_ip_address'] = '10.0.3.231'
+
