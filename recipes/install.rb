@@ -12,6 +12,25 @@ windows_feature "NetFx3" do
   source node['ls_sql_server']['netfx3_source']
 end
 
+# Create Service Account if it doesn't exist
+ls_windows_ad_svcacct node['ls_sql_server']['sql_svc_account'] do
+  action :create
+  domain_name node['ls_sql_server']['domain_name']
+  ou "Service Accounts"
+  options({
+      "samid" => node['ls_sql_server']['sql_svc_account'],
+      "upn" => "#{node['ls_sql_server']['sql_svc_account']}@#{node['ls_sql_server']['domain_name']}",
+      "fn" => node['ls_sql_server']['sql_svc_account'],
+      "display" => node['ls_sql_server']['sql_svc_account'],
+      "description" => "Sql Service Account Built by Chef",
+      "disabled" => "no",
+      "pwd" => node['ls_sql_server']['sql_account_pwd']
+  })
+  cmd_user "Administrator"
+  cmd_pass '!QAZSE$1qazse4'
+  cmd_domain node['ls_sql_server']['domain_name']
+end 
+
 # Install SQL 2012 Enterprise
 
 config_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'ConfigurationFile.ini'))

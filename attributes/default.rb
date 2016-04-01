@@ -1,4 +1,6 @@
 default['ls_sql_server']['netfx3_source'] = 'c:\Sources\sxs'
+default['ls_sql_server']['sql_svc_account'] = 'sql.service'
+default['ls_sql_server']['domain_name'] = "thewall.local"
 default['ls_sql_server']['sql_account'] = 'THEWALL.LOCAL\\sql.service'
 default['ls_sql_server']['sql_source'] = 'c:\\Sources\\SQL2012SP3'
 default['ls_sql_server']['sysadmins'] = "THEWALL.LOCAL\\SQL Administrators"
