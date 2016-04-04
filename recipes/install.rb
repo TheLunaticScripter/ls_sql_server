@@ -13,23 +13,27 @@ windows_feature "NetFx3" do
 end
 
 # Create Service Account if it doesn't exist
-ls_windows_ad_svcacct node['ls_sql_server']['sql_svc_account'] do
+=begin
+ls_windows_ad_svcacct "sql.service" do
   action :create
+  name node['ls_sql_server']['sql_svc_account']
   domain_name node['ls_sql_server']['domain_name']
   ou "Service Accounts"
   options({
-      "samid" => node['ls_sql_server']['sql_svc_account'],
+      "name" => "#{node['ls_sql_server']['sql_svc_account']}",
+      "samid" => "#{node['ls_sql_server']['sql_svc_account']}",
       "upn" => "#{node['ls_sql_server']['sql_svc_account']}@#{node['ls_sql_server']['domain_name']}",
-      "fn" => node['ls_sql_server']['sql_svc_account'],
-      "display" => node['ls_sql_server']['sql_svc_account'],
+      "fn" => "#{node['ls_sql_server']['sql_svc_account']}",
+      "display" => "#{node['ls_sql_server']['sql_svc_account']}",
       "description" => "Sql Service Account Built by Chef",
       "disabled" => "no",
-      "pwd" => node['ls_sql_server']['sql_account_pwd']
+      "pwd" => "#{node['ls_sql_server']['sql_account_pwd']}"
   })
   cmd_user "Administrator"
   cmd_pass '!QAZSE$1qazse4'
   cmd_domain node['ls_sql_server']['domain_name']
 end 
+=end
 
 # Install SQL 2012 Enterprise
 
