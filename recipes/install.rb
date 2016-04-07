@@ -14,7 +14,7 @@ end
 
 # Create Service Account if it doesn't exist
 
-ls_windows_ad_svcacct "sql.service" do
+ls_windows_ad_svcacct "#{node['ls_sql_server']['sql_svc_account']}" do
   action :create
   name node['ls_sql_server']['sql_svc_account']
   domain_name node['ls_sql_server']['domain_name']
