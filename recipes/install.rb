@@ -12,11 +12,19 @@ windows_feature "NetFx3" do
   source node['ls_sql_server']['netfx3_source']
 end
 
+# Install Active Directory PowerShell tools to validate accounts exist
+
+windows_feature "RSAT-AD-PowerShell" do 
+  action :install
+  all true
+  provider :windows_feature_powershell
+end
+
 # Create Service Account if it doesn't exist
 
 ls_windows_ad_svcacct "#{node['ls_sql_server']['sql_svc_account']}" do
   action :create
-  name node['ls_sql_server']['sql_svc_account']
+  svcacct node['ls_sql_server']['sql_svc_account']
   domain_name node['ls_sql_server']['domain_name']
   pswd node['ls_sql_server']['sql_account_pwd']
   ou "OU=Service Accounts"
