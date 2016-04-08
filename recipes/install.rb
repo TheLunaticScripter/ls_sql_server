@@ -32,7 +32,7 @@ end
 
 # Create SQL Administrators group if requested
 if node['ls_sql_server']['create_sql_admins_group'] == true
-  ls_windows_ad_group "SQL Administrators" do
+  ls_windows_ad_groups "SQL Administrators" do
     action :create
     name "SQL Administrators"
     category "Security"
