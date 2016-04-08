@@ -28,8 +28,23 @@ ls_windows_ad_svcacct "#{node['ls_sql_server']['sql_svc_account']}" do
   domain_name node['ls_sql_server']['domain_name']
   pswd node['ls_sql_server']['sql_account_pwd']
   ou "OU=Service Accounts"
-end 
+end
 
+# Create SQL Administrators group if requested
+if node['ls_sql_server']['create_sql_admins_group'] == true
+  ls_windows_ad_group "SQL Administrators" do
+    action :create
+    name "SQL Administrators"
+    category "Security"
+    scope "Global"
+    ou node['ls_sql_server']['sql_admin_group_ou']
+  end
+  ls_windows_ad_group_member "Add user #{node['ls_sql_server']['sql_admin_group_member']} to SQL Administrators group" do
+    action :add
+    user_name node['ls_sql_server']['sql_admin_group_member']
+    group_name "SQL Administrators"
+  end  
+end
 
 # Install SQL 2012 Enterprise
 
