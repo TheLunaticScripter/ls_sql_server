@@ -66,3 +66,5 @@ windows_package 'Microsoft SQL Server 2012 (64-bit)' do
   options "#{passwords_options} /ConfigurationFile=#{config_file_path} "
   action :install
 end 
+
+# TODO: Set SQL Memory on based on server memeory
