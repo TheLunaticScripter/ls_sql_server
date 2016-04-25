@@ -67,4 +67,36 @@ windows_package 'Microsoft SQL Server 2012 (64-bit)' do
   action :install
 end 
 
+sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
+
 # TODO: Set SQL Memory on based on server memeory
+sql_memory = node[:kernel][:cs_info][:total_physical_memory].to_f * 0.8
+sql_memory_kb = sql_memory / 1000000
+sql_memory_mb = sql_memory_kb.floor
+
+log 'memory' do
+  message "SQl Memory #{sql_memory_mb}"
+  level :info
+end
+
+powershell_script 'Configure SQL Memory to 80 percent physical memory' do
+  code <<-EOH
+    Import-Module "#{sqlps_module_path}"
+    cd \\sql\\$env:COMPUTERNAME
+    $server = Get-Item default
+    $server.Configuration.MaxServerMemory.ConfigValue = #{sql_memory_mb}
+    $server.Configuration.Alter()
+  EOH
+  guard_interpreter :powershell_script
+  not_if <<-EOH
+    $set = $false
+    try{
+        Import-Module "#{sqlps_module_path}"
+        cd \\sql\\$env:COMPUTERNAME
+        $server = Get-Item default
+        if($server.Configuration.MaxServerMemory.ConfigValue -eq #{sql_memory_mb}){$set = $true}
+    }
+    catch{}
+    $set
+  EOH
+end
