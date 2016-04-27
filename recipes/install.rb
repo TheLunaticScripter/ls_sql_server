@@ -71,7 +71,7 @@ sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\
 
 # TODO: Set SQL Memory on based on server memeory
 sql_memory = node[:kernel][:cs_info][:total_physical_memory].to_f * 0.8
-sql_memory_kb = sql_memory / 1000000
+sql_memory_kb = sql_memory / 1_000_000
 sql_memory_mb = sql_memory_kb.floor
 
 log 'memory' do
