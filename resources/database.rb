@@ -1,4 +1,4 @@
-actions :create, :backup, :remove, :delete_backup, :restore_backup
+actions :create, :backup, :remove, :delete_backup, :restore_backup, :backup_log, :restore_log
 default_action :create
 
 attribute :name, name_attribute: true, kind_of: String, required: true

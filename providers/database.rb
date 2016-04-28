@@ -38,6 +38,18 @@ action :restore_backup do
   end
 end
 
+action :backup_log do
+  converge_by("Backup #{@new_resource.name} log to #{@new_resource.backup_location}") do
+    backup_log
+  end
+end
+
+action :restore_log do
+  coverge_by("Restore #{@new_resource.name} log from #{@new_resource.backup_location}") do
+    restore_log
+  end
+end
+
 def whyrun_supported?
   true
 end
@@ -99,4 +111,28 @@ end
 
 def restore_backup
   # TODO: Restore database from backup file.
+end
+
+def backup_log
+  sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
+  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  template 'c:\\chef\\cache\\backup_log.sql' do
+    path 'c:\\chef\\cache\\backup_log.sql'
+    source 'backup_log.sql.erb'
+    cookbook 'ls_sql_server'
+    variables(
+        db_name: new_resource.name,
+        backup_file: backup_file
+    )
+    powershell_script 'Backup Log for database #{new_resource.name}' do
+      code <<-EOH
+        Import-Module "#{sql_module_path}"
+        Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\backup_log.sql"
+      EOH
+    end
+  end
+end
+
+def restore_log
+  # TODO: Restore database log
 end
