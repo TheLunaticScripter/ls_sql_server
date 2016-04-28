@@ -2,9 +2,10 @@ def load_current_resource
   @current_resource = Chef::Resource::LsSqlServerDatabase.new(@new_resource.name)
   @current_resource.name(@new_resource.name)
   @current_resource.recovery_model(@new_resource.recovery_model)
-  @current_resource.backup_type(@new_resource.backup_type)
+  @current_resource.backup_action(@new_resource.backup_action)
   @current_resource.backup_name(@new_resource.backup_name)
-  @current_resource.backup_location(@new_resource.backup_location)  
+  @current_resource.backup_location(@new_resource.backup_location)
+  @current_resource.restore_action(@new_resource.restore_action)
 end
 
 action :create do
@@ -28,6 +29,12 @@ end
 action :delete_backup do
   converge_by("Delete backup #{@new_resource.backup_name}") do
     delete_backup
+  end
+end
+
+action :restore_backup do
+  converge_by("Restore database #{@new_resource.name} from backup #{@new_resource.backup_location}") do
+    restore_backup
   end
 end
 
@@ -63,7 +70,23 @@ def create_database
 end
 
 def backup_database
-  # TODO: Create method to backup database in SQL
+  sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
+  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  template 'c:\\chef\\cache\\backup_db.sql' do
+    path 'c:\\chef\\cache\backup_db.sql'
+    source 'backup_db.sql.erb'
+    cookbook 'ls_sql_server'
+    variables(
+        db_name: new_resource.name,
+        backup_file: backup_file
+    )
+  end
+  powershell_script 'Backup database #{new_resource.name}' do
+    code <<-EOH
+      Import-Module "#{sqlps_module_path}"
+      Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\backup_db.sql"
+    EOH
+  end
 end
 
 def remove_database
@@ -72,4 +95,8 @@ end
 
 def delete_backup
   # TODO: Create method to delete backup
+end
+
+def restore_backup
+  # TODO: Restore database from backup file.
 end
