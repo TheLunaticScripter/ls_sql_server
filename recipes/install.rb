@@ -4,22 +4,15 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-<<<<<<< HEAD
-# Install .Net 3.5 Framework
-
-windows_feature "NetFx3" do
-=======
 
 # Install .Net 3.5 Framework
 
 windows_feature 'NetFx3' do
->>>>>>> 3f3bb35d191a3c4847bf30fe78ee4186d98d9b12
   action :install
   all true
   source node['ls_sql_server']['netfx3_source']
 end
 
-<<<<<<< HEAD
 # Install Active Directory PowerShell tools to validate accounts exist
 
 windows_feature "RSAT-AD-PowerShell" do 
@@ -38,8 +31,6 @@ ls_windows_ad_svcacct "#{node['ls_sql_server']['sql_svc_account']}" do
   ou "OU=Service Accounts"
 end
 
-=======
->>>>>>> 3f3bb35d191a3c4847bf30fe78ee4186d98d9b12
 # Install SQL 2012 Enterprise
 
 config_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'ConfigurationFile.ini'))
@@ -75,7 +66,6 @@ windows_package 'Microsoft SQL Server 2012 (64-bit)' do
   timeout 1500
   options "#{passwords_options} /ConfigurationFile=#{config_file_path} "
   action :install
-<<<<<<< HEAD
 end 
 
 sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
@@ -111,7 +101,4 @@ powershell_script 'Configure SQL Memory to 80 percent physical memory' do
     $set
   EOH
 end
-=======
-end
 
->>>>>>> 3f3bb35d191a3c4847bf30fe78ee4186d98d9b12
