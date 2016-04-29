@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 default['ls_sql_server']['netfx3_source'] = 'c:\Sources\sxs'
 default['ls_sql_server']['sql_svc_account'] = 'sql.service'
 default['ls_sql_server']['domain_name'] = "thewall.local"
@@ -12,3 +13,12 @@ default['ls_sql_server']['sql_account_pwd'] = '!QAZSE$1qazse4'
 default['ls_sql_server']['cluster'] = "standalone"
 default['ls_windows_cluster']['cluster_name'] = "SQLtestCluster"
 default['ls_windows_cluster']['cluster_ip_address'] = '10.0.3.232'
+=======
+default['ls_sql_server']['netfx3_source'] = '\\\\SCCM\software$\Sources\sxs'
+default['ls_sql_server']['sql_account'] = 'thewall.LOCAL\\SQLSVC'
+default['ls_sql_server']['sql_source'] = '\\\\SCCM\\software$\\Sources\\SQL2012SP3'
+default['ls_sql_server']['sysadmins'] = 'thewall.LOCAL\\SQL Administrators'
+default['ls_sql_server']['agent_account_pwd'] = 'p@ssw0rd!'
+default['ls_sql_server']['sql_account_pwd'] = 'p@ssw0rd!'
+default['ls_sql_server']['cluster'] = 'standalone'
+>>>>>>> 3f3bb35d191a3c4847bf30fe78ee4186d98d9b12

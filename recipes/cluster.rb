@@ -4,6 +4,7 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
+<<<<<<< HEAD
 # Install and configure cluster
 include_recipe 'ls_windows_cluster'
 
@@ -22,3 +23,9 @@ powershell_script 'Enable-SQLAlwayson' do
     (Get-Item .).IsHadrEnabled
   EOH
 end
+=======
+# Install and Configure SQL Cluster
+
+include_recipe 'ls_windows_cluster'
+
+>>>>>>> 3f3bb35d191a3c4847bf30fe78ee4186d98d9b12
