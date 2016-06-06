@@ -1,0 +1,8 @@
+USE [master]
+
+GO
+
+ALTER AVAILABILITY GROUP [<%= @avail_group %>]
+ADD DATABASE [<%= @db_name %>];
+
+GO

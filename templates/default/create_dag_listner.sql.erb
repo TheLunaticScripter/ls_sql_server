@@ -1,0 +1,10 @@
+USE [master]
+GO
+ALTER AVAILABILITY GROUP [<%= @dag_name %>]
+ADD LISTENER N'<%= @listner_name %>' (
+WITH IP
+((N'<%= @ip_address %>',N'<%= @subnet %>')
+)
+, PORT=<%= @port%>);
+
+GO

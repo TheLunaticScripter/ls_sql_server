@@ -1,11 +1,11 @@
 def load_current_resource
   @current_resource = Chef::Resource::LsSqlServerDatabase.new(@new_resource.name)
   @current_resource.name(@new_resource.name)
+  @current_resource.server_instance(@new_resource.server_instance)
   @current_resource.recovery_model(@new_resource.recovery_model)
   @current_resource.backup_action(@new_resource.backup_action)
   @current_resource.backup_name(@new_resource.backup_name)
   @current_resource.backup_location(@new_resource.backup_location)
-  @current_resource.restore_action(@new_resource.restore_action)
 end
 
 action :create do
@@ -45,7 +45,7 @@ action :backup_log do
 end
 
 action :restore_log do
-  coverge_by("Restore #{@new_resource.name} log from #{@new_resource.backup_location}") do
+  converge_by("Restore #{@new_resource.name} log from #{@new_resource.backup_location}") do
     restore_log
   end
 end
@@ -71,12 +71,12 @@ def create_database
   powershell_script 'Create Database #{new_resource.name}' do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"
-      Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\create_db.sql"
+      Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\create_db.sql" -ServerInstance "#{new_resource.server_instance}"
     EOH
     guard_interpreter :powershell_script
     only_if <<-EOH
       Import-Module "#{sqlps_module_path}"
-      (Invoke-Sqlcmd -Query "SELECT COUNT(*) AS Count FROM sys.databases WHERE name = '#{new_resource.name}'").Count -eq 0
+      (Invoke-Sqlcmd -ServerInstance "#{new_resource.server_instance}" -Query "SELECT COUNT(*) AS Count FROM sys.databases WHERE name = '#{new_resource.name}'").Count -eq 0
     EOH
   end
 end
@@ -96,7 +96,7 @@ def backup_database
   powershell_script 'Backup database #{new_resource.name}' do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"
-      Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\backup_db.sql"
+      Invoke-Sqlcmd -ServerInstance "#{new_resource.server_instance}" -InputFile "c:\\chef\\cache\\backup_db.sql"
     EOH
   end
 end
@@ -110,7 +110,23 @@ def delete_backup
 end
 
 def restore_backup
-  # TODO: Restore database from backup file.
+  sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
+  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  template 'c:\\chef\\cache\\restore_db.sql' do
+    path 'c:\\chef\\cache\\restore_db.sql'
+    source 'restore_db.sql.erb'
+    cookbook 'ls_sql_server'
+    variables(
+        db_name: new_resource.name,
+        backup_file: backup_file
+    )
+  end
+  powershell_script 'Restore database #{new_resource.name} from #{backup_file}' do
+    code <<-EOH
+      Import-Module "#{sqlps_module_path}"
+      Invoke-Sqlcmd -ServerInstance "#{new_resource.server_instance}" -InputFile "c:\\chef\\cache\\restore_db.sql"
+    EOH
+  end
 end
 
 def backup_log
@@ -124,15 +140,31 @@ def backup_log
         db_name: new_resource.name,
         backup_file: backup_file
     )
-    powershell_script 'Backup Log for database #{new_resource.name}' do
-      code <<-EOH
-        Import-Module "#{sql_module_path}"
-        Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\backup_log.sql"
-      EOH
-    end
+  end
+  powershell_script 'Backup Log for database #{new_resource.name}' do
+    code <<-EOH
+      Import-Module "#{sqlps_module_path}"
+      Invoke-Sqlcmd -ServerInstance "#{new_resource.server_instance}" -InputFile "c:\\chef\\cache\\backup_log.sql"
+    EOH
   end
 end
 
 def restore_log
-  # TODO: Restore database log
+  sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
+  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  template 'c:\\chef\\cache\\restore_log.sql' do
+    path 'c:\\chef\\cache\\restore_log.sql'
+    source 'restore_log.sql.erb'
+    cookbook 'ls_sql_server'
+    variables(
+        db_name: new_resource.name,
+        backup_file: backup_file
+    )
+  end
+  powershell_script 'Restore database #{new_resource.name} log from #{backup_file}' do
+    code <<-EOH
+      Import-Module "#{sqlps_module_path}"
+      Invoke-Sqlcmd -ServerInstance "#{new_resource.server_instance}" -InputFile "c:\\chef\\cache\\restore_log.sql"
+    EOH
+  end
 end

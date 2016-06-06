@@ -1,0 +1,3 @@
+RESTORE LOG [<%= @db_name %>] FROM DISK = N'<%= @backup_file %>' WITH NORECOVERY, NOUNLOAD, STATS = 5
+
+GO
