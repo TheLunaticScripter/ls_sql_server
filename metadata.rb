@@ -10,3 +10,6 @@ supports 'windows'
 depends 'windows'
 depends 'ls_windows_cluster'
 depends 'ls_windows_ad', '>=0.3.7'
+
+issues_url 'https://github.com/TheLunaticScripter/ls_sql_server/issues'
+source_url 'https://github.com/TheLunaticScripter/ls_sql_server/'
