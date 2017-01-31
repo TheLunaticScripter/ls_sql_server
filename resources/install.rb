@@ -14,7 +14,7 @@ def whyrun_supported?
 end
 
 def load_current_resource
-  @current_resource = Chef::Resource::J6xSqlInstall.new(@new_resource.name)
+  @current_resource = Chef::Resource::LsSqlServerInstall.new(@new_resource.name)
 end
 
 action :install do
