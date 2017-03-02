@@ -29,10 +29,10 @@ action :set do
   end
 end
 
-def get_sql_memory_mb
-  sql_memory = node[:kernel][:cs_info][:total_physical_memory].to_f * memory_percentage
+def sql_memory_mb
+  sql_memory = node['kernel']['cs_info']['total_physical_memory'].to_f * memory_percentage
   sql_memory_kb = sql_memory / 1_000_000
-  sql_memory_mb = sql_memory_kb.floor
+  sql_memory_kb.floor
 end
 
 def exists?
