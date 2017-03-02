@@ -1,3 +1,7 @@
+# provider for avail_group LWRP
+
+use_inline_resources
+
 def load_current_resource
   @current_resource = Chef::Resource::LsSqlServerAvailGroup.new(@new_resource.name)
   @current_resource.ag_name(@new_resource.ag_name)
@@ -19,7 +23,7 @@ end
 action :add_replica do
   converge_by("Add SQL server as replica to availability group#{@new_resource.ag_name}") do
     add_replica
-  end 
+  end
 end
 
 action :add_db do
@@ -33,8 +37,6 @@ def whyrun_supported?
 end
 
 private
-
-
 
 def avail_exist?
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
@@ -54,9 +56,8 @@ end
 
 def create_availability_group
   # Create replica builder string for template
-    
   time = Time.now.getutc
-  
+
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
   # Create template files
   template 'c:\\chef\\cache\\set_endpoint.sql' do
@@ -74,11 +75,11 @@ def create_availability_group
     source 'create_avail_group.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        avail_group_name: new_resource.ag_name,
-        db_name: new_resource.db_name,
-        primary_server: new_resource.primary_server,
-        secondary_server: new_resource.replica_server,
-        domain: new_resource.fqdn
+      avail_group_name: new_resource.ag_name,
+      db_name: new_resource.db_name,
+      primary_server: new_resource.primary_server,
+      secondary_server: new_resource.replica_server,
+      domain: new_resource.fqdn
     )
   end
   template 'c:\\chef\\cache\\join_avail_group.sql' do
@@ -86,27 +87,27 @@ def create_availability_group
     source 'join_avail_group.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        avail_group_name: new_resource.ag_name
+      avail_group_name: new_resource.ag_name
     )
   end
-  
+
   template 'c:\\chef\\cache\\join_db_replica.sql' do
     path 'c:\\chef\\cache\\join_db_replica.sql'
     source 'join_db_replica.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        avail_group_name: new_resource.ag_name,
-        db_name: new_resource.db_name
+      avail_group_name: new_resource.ag_name,
+      db_name: new_resource.db_name
     )
   end
-  
+
   # Create Database if it doesn't exists
   ls_sql_server_database 'Create database #{new_resource.db_name}' do
     action :create
     name new_resource.db_name
     server_instance new_resource.primary_server
   end
-  
+
   ls_sql_server_database 'Backup #{new_resource.db_name}' do
     action :backup
     name new_resource.db_name
@@ -114,11 +115,11 @@ def create_availability_group
     backup_name "#{new_resource.db_name}AGCreate.bak"
     server_instance new_resource.primary_server
   end
-  
-  time_string = time.strftime("%Y%m%d%H%M%S")
-  
+
+  time_string = time.strftime('%Y%m%d%H%M%S')
+
   log_backup_name = "#{new_resource.db_name}AGcreate_#{time_string}.trn"
-  
+
   ls_sql_server_database 'Backup #{new_resource.db_name} log' do
     action :backup_log
     name new_resource.db_name
@@ -126,13 +127,13 @@ def create_availability_group
     backup_name log_backup_name
     server_instance new_resource.primary_server
   end
-  
+
   # Set endpoints
   powershell_script 'Configure endpoints on #{new_resource.primary_server}' do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\set_endpoint.sql" -ServerInstance "#{new_resource.primary_server}"
-      
+
     EOH
   end
   powershell_script 'Configure endpoints on #{new_resource.replica_server}' do
@@ -141,7 +142,7 @@ def create_availability_group
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\set_endpoint.sql" -ServerInstance "#{new_resource.replica_server}"
     EOH
   end
-  
+
   # Set event sessions
   powershell_script 'Configure event sessions on #{new_resource.primary_server}' do
     code <<-EOH
@@ -155,7 +156,7 @@ def create_availability_group
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\set_event_session.sql" -ServerInstance "#{new_resource.replica_server}"
     EOH
   end
-  
+
   # Create availability group on Primary SQL server
   powershell_script 'Create availablity group #{new_resource.ag_name} on #{new_resource.primary_server}' do
     code <<-EOH
@@ -169,9 +170,9 @@ def create_availability_group
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\join_avail_group.sql" -ServerInstance "#{new_resource.replica_server}"
     EOH
   end
-  
+
   # Backup Database on Primary and Restore on replica
-  
+
   ls_sql_server_database 'Restore database #{new_resource.db_name} to server #{new_resource.replica_server}' do
     action :restore_backup
     name new_resource.db_name
@@ -179,7 +180,7 @@ def create_availability_group
     backup_name "#{new_resource.db_name}AGCreate.bak"
     server_instance new_resource.replica_server
   end
-  
+
   ls_sql_server_database 'Restore database #{new_resource.db_name} log to server #{new_resource.replica_server}' do
     action :restore_log
     name new_resource.db_name
@@ -187,7 +188,7 @@ def create_availability_group
     backup_name log_backup_name
     server_instance new_resource.replica_server
   end
-  
+
   # Join Database to AG on Replica server
   powershell_script 'Join Database #{new_resource.db_name} to #{new_resource.name} availability group' do
     code <<-EOH
@@ -204,27 +205,27 @@ end
 def add_db
   time = Time.now.getutc
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
-  
+
   template 'c:\\chef\\cache\\join_db_replica.sql' do
     path 'c:\\chef\\cache\\join_db_replica.sql'
     source 'join_db_replica.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        avail_group_name: new_resource.ag_name,
-        db_name: new_resource.db_name
+      avail_group_name: new_resource.ag_name,
+      db_name: new_resource.db_name
     )
   end
-  
+
   template 'c:\\chef\\cache\\alter_dag_add_db.sql' do
     path 'c:\\chef\\cache\\alter_dag_add_db.sql'
     source 'alter_dag_add_db.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        avail_group: new_resource.ag_name,
-        db_name: new_resource.db_name
+      avail_group: new_resource.ag_name,
+      db_name: new_resource.db_name
     )
   end
-  
+
   ls_sql_server_database 'Backup #{new_resource.db_name}' do
     action :backup
     name new_resource.db_name
@@ -232,11 +233,11 @@ def add_db
     backup_name "#{new_resource.db_name}AgDbAdd.bak"
     server_instance new_resource.primary_server
   end
-  
-  time_string = time.strftime("%Y%m%d%H%M%S")
-  
+
+  time_string = time.strftime('%Y%m%d%H%M%S')
+
   log_backup_name = "#{new_resource.db_name}AgDbAdd_#{time_string}.trn"
-  
+
   ls_sql_server_database 'Backup #{new_resource.db_name} log' do
     action :backup_log
     name new_resource.db_name
@@ -244,14 +245,14 @@ def add_db
     backup_name log_backup_name
     server_instance new_resource.primary_server
   end
-  
+
   powershell_script 'Alter DAG add db #{new_resource.db_name}' do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\alter_dag_add_db.sql" -ServerInstance "#{new_resource.primary_server}"
     EOH
   end
-  
+
   ls_sql_server_database 'Restore database #{new_resource.db_name} to server #{new_resource.replica_server}' do
     action :restore_backup
     name new_resource.db_name
@@ -259,7 +260,7 @@ def add_db
     backup_name "#{new_resource.db_name}AgDbAdd.bak"
     server_instance new_resource.replica_server
   end
-  
+
   ls_sql_server_database 'Restore database #{new_resource.db_name} log to server #{new_resource.replica_server}' do
     action :restore_log
     name new_resource.db_name
@@ -267,7 +268,7 @@ def add_db
     backup_name log_backup_name
     server_instance new_resource.replica_server
   end
-  
+
   powershell_script 'Join Database #{new_resource.db_name} to #{new_resource.name} availability group' do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"

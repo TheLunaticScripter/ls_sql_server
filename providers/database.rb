@@ -1,3 +1,7 @@
+# provider for database LWRP
+
+use_inline_resources
+
 def load_current_resource
   @current_resource = Chef::Resource::LsSqlServerDatabase.new(@new_resource.name)
   @current_resource.name(@new_resource.name)
@@ -64,11 +68,11 @@ def create_database
     source 'create_db.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        db_name: new_resource.name,
-        recovery_model: new_resource.recovery_model
+      db_name: new_resource.name,
+      recovery_model: new_resource.recovery_model
     )
   end
-  powershell_script 'Create Database #{new_resource.name}' do
+  powershell_script "Create Database #{new_resource.name}" do
     code <<-EOH
       Import-Module "#{sqlps_module_path}"
       Invoke-Sqlcmd -InputFile "c:\\chef\\cache\\create_db.sql" -ServerInstance "#{new_resource.server_instance}"
@@ -83,14 +87,14 @@ end
 
 def backup_database
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
-  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  backup_file = new_resource.backup_location + '\\' + new_resource.backup_name
   template 'c:\\chef\\cache\\backup_db.sql' do
     path 'c:\\chef\\cache\backup_db.sql'
     source 'backup_db.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        db_name: new_resource.name,
-        backup_file: backup_file
+      db_name: new_resource.name,
+      backup_file: backup_file
     )
   end
   powershell_script 'Backup database #{new_resource.name}' do
@@ -111,14 +115,14 @@ end
 
 def restore_backup
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
-  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  backup_file = new_resource.backup_location + '\\' + @new_resource.backup_name
   template 'c:\\chef\\cache\\restore_db.sql' do
     path 'c:\\chef\\cache\\restore_db.sql'
     source 'restore_db.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        db_name: new_resource.name,
-        backup_file: backup_file
+      db_name: new_resource.name,
+      backup_file: backup_file
     )
   end
   powershell_script 'Restore database #{new_resource.name} from #{backup_file}' do
@@ -131,14 +135,14 @@ end
 
 def backup_log
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
-  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  backup_file = new_resource.backup_location + '\\' + new_resource.backup_name
   template 'c:\\chef\\cache\\backup_log.sql' do
     path 'c:\\chef\\cache\\backup_log.sql'
     source 'backup_log.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        db_name: new_resource.name,
-        backup_file: backup_file
+      db_name: new_resource.name,
+      backup_file: backup_file
     )
   end
   powershell_script 'Backup Log for database #{new_resource.name}' do
@@ -151,14 +155,14 @@ end
 
 def restore_log
   sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
-  backup_file = "#{@new_resource.backup_location}" + '\\' + "#{@new_resource.backup_name}"
+  backup_file = new_resource.backup_location + '\\' + new_resource.backup_name
   template 'c:\\chef\\cache\\restore_log.sql' do
     path 'c:\\chef\\cache\\restore_log.sql'
     source 'restore_log.sql.erb'
     cookbook 'ls_sql_server'
     variables(
-        db_name: new_resource.name,
-        backup_file: backup_file
+      db_name: new_resource.name,
+      backup_file: backup_file
     )
   end
   powershell_script 'Restore database #{new_resource.name} log from #{backup_file}' do
