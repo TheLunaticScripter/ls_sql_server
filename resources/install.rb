@@ -29,42 +29,42 @@ action :install do
       }
     EOH
   end
-  
-  service_name = if instance_name == nil
-                   instance_name = 'MSSQLSERVER'
-                 else
-                   "MSSQL$#{instance_name}"
-                 end
-  
-  agent_service_name = if instance_name == nil
-                         'SQLSERVERAGENT'
-                       else
-                         'SQLAgent$#{instance_name}'
-                       end
+
+  if instance_name.nil?
+    instance_name = 'MSSQLSERVER'
+  else
+    "MSSQL$#{instance_name}"
+  end
+
+  if instance_name.nil?
+    'SQLSERVERAGENT'
+  else
+    'SQLAgent$#{instance_name}'
+  end
 
   config_file_path = ::File.join(Chef::Config[:file_cache_path], 'ConfigurationFile.ini')
-  #config_file_path = ConfigurationFile.ini
-  
-  sql_sys_admin_list = #if sys_admin_list.count? == 1
-                         %("#{sys_admin_list}")
-                       #else
-                       #  sys_admin_list.map { |account| %("#{account}")}.join(' ')
-                       #end
-  
+  # config_file_path = ConfigurationFile.ini
+
+  sql_sys_admin_list = # if sys_admin_list.count? == 1
+    %("#{sys_admin_list}")
+  # else
+  #  sys_admin_list.map { |account| %("#{account}")}.join(' ')
+  # end
+
   template config_file_path do
     source 'ConfigurationFile.ini.erb'
     cookbook 'ls_sql'
     variables(
-        sqlSysAdminList: sql_sys_admin_list,
-        sql_account: sql_svc_account,
-        instance_name: instance_name,
-        instance_dir: install_dir
+      sqlSysAdminList: sql_sys_admin_list,
+      sql_account: sql_svc_account,
+      instance_name: instance_name,
+      instance_dir: install_dir
     )
   end
-  
+
   password_options = {
     AGTSVCPASSWORD: sql_svc_acct_pswd,
-    SQLSVCPASSWORD: sql_svc_acct_pswd
+    SQLSVCPASSWORD: sql_svc_acct_pswd,
   }.map do |option, attribute|
     next unless attribute
     safe_password = attribute.gsub(/["\\]/, '\\\\\0')

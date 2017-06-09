@@ -8,4 +8,3 @@ attribute :backup_action, kind_of: String
 attribute :backup_name, kind_of: String
 attribute :backup_location, kind_of: String
 attribute :restore_action, kind_of: String
-
