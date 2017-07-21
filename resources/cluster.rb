@@ -16,7 +16,7 @@ action :enable_always_on do
   else
     sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS')
     cmd = ''
-    cmd << "Import-Module #{sqlps_module_path};"
+    cmd << "Import-Module \'#{sqlps_module_path}\';"
     cmd << 'Enable-SQLAlwaysOn '
     cmd << ' -Path \"SQLSERVER:\\SQL\\$env:COMPUTERNAME\\DEFAULT\"'
     cmd << ' -Force'
