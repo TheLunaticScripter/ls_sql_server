@@ -20,7 +20,7 @@ action :enable_always_on do
     cmd << 'Enable-SQLAlwaysOn '
     cmd << ' -Path \"SQLSERVER:\\SQL\\$env:COMPUTERNAME\\DEFAULT\"'
     cmd << ' -Force'
-    powershell_scripte 'Enable SQL Always On' do
+    powershell_script 'Enable SQL Always On' do
       code cmd
     end
     @new_resource.updated_by_last_action(true)
