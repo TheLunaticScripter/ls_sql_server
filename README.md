@@ -26,10 +26,10 @@ Recipes
 -------
 
 ### default.rb
-Installs SQL and creates a cluster if the cluster attribute is set to cluster
+Installs SQL and enbles Always-On feature if the cluster attribute is set to cluster
 
 ### cluster.rb
-Creates a Failover-Cluster and sets SQL Always-On feature
+Sets SQL Always-On feature
 
 ### install.rb
 Installs SQL and sets max memory to 80% of total node memory

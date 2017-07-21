@@ -46,14 +46,14 @@ action :install do
   # config_file_path = ConfigurationFile.ini
 
   sql_sys_admin_list = # if sys_admin_list.count? == 1
-    %("#{sys_admin_list}")
+    %("#{sys_admin_group}")
   # else
   #  sys_admin_list.map { |account| %("#{account}")}.join(' ')
   # end
 
   template config_file_path do
     source 'ConfigurationFile.ini.erb'
-    cookbook 'ls_sql'
+    cookbook 'ls_sql_server'
     variables(
       sqlSysAdminList: sql_sys_admin_list,
       sql_account: sql_svc_account,
