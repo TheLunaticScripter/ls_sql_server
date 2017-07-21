@@ -18,7 +18,7 @@ action :enable_always_on do
     cmd = ''
     cmd << "Import-Module \'#{sqlps_module_path}\';"
     cmd << 'Enable-SQLAlwaysOn '
-    cmd << ' -Path \"SQLSERVER:\\SQL\\$env:COMPUTERNAME\\DEFAULT\"'
+    cmd << ' -Path "SQLSERVER:\\SQL\\$env:COMPUTERNAME\\DEFAULT"'
     cmd << ' -Force'
     powershell_script 'Enable SQL Always On' do
       code cmd
