@@ -4,7 +4,7 @@ maintainer_email 'you@example.com'
 license 'all_rights'
 description 'Installs/Configures ls_sql_server'
 long_description 'Installs/Configures ls_sql_server'
-version '1.0.7'
+version '1.1.0'
 supports 'windows'
 
 depends 'windows'

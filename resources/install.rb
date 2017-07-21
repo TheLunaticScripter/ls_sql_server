@@ -4,6 +4,7 @@ property :sys_admin_group, kind_of: String, required: true
 property :sql_svc_account, kind_of: String, required: true
 property :sql_svc_acct_pswd, kind_of: String, required: true
 property :install_source, kind_of: String, required: true
+property :package_name, kind_of: String, default: 'Microsoft SQL Server 2014 (64-bit)'
 property :instance_name, kind_of: String
 property :install_dir, kind_of: String, default: 'C:\\Program Files\\Microsoft SQL Server'
 
@@ -72,7 +73,7 @@ action :install do
     "/#{option}=\"#{safe_password}#{enclosing_escape}\""
   end.compact.join ' '
 
-  windows_package 'Microsoft SQL Server 2012 (64-bit)' do
+  windows_package new_resource.package_name do
     source install_source
     timeout 1500
     installer_type :custom
